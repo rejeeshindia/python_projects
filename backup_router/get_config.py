@@ -1,4 +1,5 @@
 import os 
+import glob
 import time
 import netmiko
 from netmiko import ConnectHandler
@@ -38,14 +39,32 @@ def cmd_and_display():
     print(f"\nOutput of {cmd} = {output}\n")
 
 def backup():
-
     running_config=connect_device('show run')
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    print(f"CUrrent time = {timestamp}")
+    print(f"Current time = {timestamp}")
     backupfilename=f"backup_{timestamp}.cfg"
     print(backupfilename)
+    print("Starting Backup")
     with open(backupfilename,"w") as backup_file:
         backup_file.write(running_config)
+
+def clean_backup():
+
+    files_to_delete=glob.glob("backup*")
+    print(f"Existing backups - ")
+    for file in files_to_delete:
+        print(file)
+
+    time.sleep(1)
+    for files in files_to_delete:
+        print ("Deleting file - ")
+        os.remove(file)
+
+
+
+
+
+
 
 
 def main():
@@ -53,18 +72,20 @@ def main():
     while True:
         print("\n1. Backup\n")
         print("\n2. Run a cmd \n")
-        print("\n3. Exit\n")
+        print("\n4. Delete backups \n")
+        print("\n5. Exit\n")
 
         choice = input("Enter the selection - ")
 
         if choice == "1":
-            print("Starting Backup")
             backup()
         
         if choice == "2":
             cmd_and_display()
+        if choice == "4":
+            clean_backup()
 
-        elif choice == "3":
+        elif choice == "5":
             print("Exiting")
             break
 
